@@ -14,9 +14,13 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only(['title', 'body']);
+        // $data = $request->only(['title', 'body']);
+        $validate= $request->validate([
+            'title'=> 'required|string|max:255',
+            'body'=> 'required|string|min:10',
+        ]);
 
-        return view('posts.preview', ['data' => $data]);
+        return view('posts.preview', $validate);
     }
 
     public function show($id)
