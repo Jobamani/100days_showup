@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StorePostRequest;
 
 
 class PostController extends Controller
@@ -12,7 +13,7 @@ class PostController extends Controller
         return view('posts.create');
     }
 
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
         // $data = $request->only(['title', 'body']);
         // $validate= $request->validate([
@@ -20,6 +21,10 @@ class PostController extends Controller
         //     'body'=> 'required|string|min:10',
         // ]);
         $validated = $request->validated();
+         if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('posts', 'public');
+            $validated['image'] = $path;
+        }
 
         return view('posts.preview', ['data' => $validated]);
 
