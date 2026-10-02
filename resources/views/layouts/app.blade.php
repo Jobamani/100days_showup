@@ -26,6 +26,11 @@
     </header>
 
     <main>
+        @if (session('success'))
+            <div style="background: #d4edda; color: #155724; padding: 1rem; margin: 1rem 0;">
+                {{ session('success') }}
+            </div>
+        @endif
         @yield('content')
     </main>
 

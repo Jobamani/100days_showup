@@ -15,6 +15,12 @@
         </div>
     @endif
 
+    @if (session('last_post'))
+        <div style="background: #e2e3e5; padding: 1rem; margin-bottom: 1rem;">
+            <strong>Last submitted:</strong> {{ session('last_post')['title'] }}
+        </div>
+    @endif
+
     <form action="{{ route('posts.store') }}" method="POST"  enctype="multipart/form-data">
         @csrf
 

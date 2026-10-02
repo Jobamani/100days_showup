@@ -26,7 +26,11 @@ class PostController extends Controller
             $validated['image'] = $path;
         }
 
-        return view('posts.preview', ['data' => $validated]);
+        // return view('posts.preview', ['data' => $validated]);
+        session(['last_post' => $validated]);
+
+        return redirect()->route('posts.create')
+            ->with('success', 'Post created successfully!');
 
     }
 
