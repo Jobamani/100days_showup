@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePostRequest;
 
@@ -26,16 +28,21 @@ class PostController extends Controller
             $validated['image'] = $path;
         }
 
-        // return view('posts.preview', ['data' => $validated]);
-        session(['last_post' => $validated]);
+        $validated['user_id'] = 1; // hardcoded until auth exists, Week 5
+        $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
 
-        return redirect()->route('posts.create')
+        // return view('posts.preview', ['data' => $validated]);
+        $post =Post::create($validated);
+        // session(['last_post' => $validated]);
+
+        return redirect()->route('posts.show', $post->id)
             ->with('success', 'Post created successfully!');
 
     }
 
     public function show($id)
     {
-        return "Post $id";
+        $post = Post::findOrFail($id);
+        return view('posts.show', ['post' => $post]);
     }
 }
