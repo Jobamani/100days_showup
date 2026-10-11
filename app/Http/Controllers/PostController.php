@@ -45,4 +45,34 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
         return view('posts.show', ['post' => $post]);
     }
+
+    public function edit($id)
+    {
+        $post = Post::findOrFail($id);
+        return view('posts.edit', ['post' => $post]);
+    }
+
+    public function update(StorePostRequest $request, $id)
+    {
+        $post = Post::findOrFail($id);
+        $validated = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('posts', 'public');
+        }
+
+        $post->update($validated);
+
+        return redirect()->route('posts.show', $post->id)
+           ->with('success', 'Post updated successfully');
+    }
+
+    public function destroy($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
+
+        return redirect()->route('posts.create')
+           ->with('success', 'Post deleted.');
+    }
 }

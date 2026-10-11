@@ -15,4 +15,12 @@
 
     <a href="{{ route('posts.create')}}">Create another</a>
 
+    <a href="{{ route('posts.edit', $post->$id )}}">Edit</a>
+
+    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Delete this post?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit">Delete</button>
+</form>    
+
 @endsection    
