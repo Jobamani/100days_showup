@@ -42,7 +42,7 @@ class PostController extends Controller
 
     public function show($id)
     {
-        $post = Post::findOrFail($id);
+        $post = Post::with('comments.user')->findOrFail($id);
         return view('posts.show', ['post' => $post]);
     }
 
@@ -65,6 +65,18 @@ class PostController extends Controller
 
         return redirect()->route('posts.show', $post->id)
            ->with('success', 'Post updated successfully');
+    }
+
+    public function storeComment(Request $request, $id)
+    {
+        $request->validate(['body' => 'required|min:3']);
+
+        Post::findOrFail($id)->comments()->create([
+            'user_id' =>1,
+            'body' => $request->input('body'),
+        ]);
+
+        return back()->with('success', 'comment added!');
     }
 
     public function destroy($id)

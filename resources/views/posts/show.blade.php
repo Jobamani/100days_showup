@@ -15,12 +15,29 @@
 
     <a href="{{ route('posts.create')}}">Create another</a>
 
-    <a href="{{ route('posts.edit', $post->$id )}}">Edit</a>
+    <a href="{{ route('posts.edit', $post->id )}}">Edit</a>
 
     <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Delete this post?');">
         @csrf
         @method('DELETE')
         <button type="submit">Delete</button>
-</form>    
+    </form>    
 
+
+    <h2>Comments ({{ $post->comments->count()}})</h2>
+
+    @forelse ($post->comments as $comment)
+        <div style="border-top: 1px solid #add; padding:0.5rem 0;">
+            <strong>{{ $comment->user->name }}</strong>
+            <p>{{ $comment->body }}</p>
+        </div>
+    @empty
+        <p>No comments yet.</p>
+    @endforelse
+
+   <form action="{{ route('comments.store', $post->id) }}" method="POST">
+        @csrf
+        <textarea name="body" placeholder="Add a comment..."></textarea>
+        <button type="submit">Comment</button>
+    </form>
 @endsection    
