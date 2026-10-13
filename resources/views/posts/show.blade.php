@@ -5,6 +5,14 @@
 @section('content')
     <h1>{{$post->title}}</h1>
 
+    @if ($post->tags->isNotEmpty())
+        <p>
+            @foreach ($post->tags as $tag)
+                <span style="background:#eee; padding:2px 8px; border-radius:4px; margin-right:4px;">{{ $tag->name }}</span>
+            @endforeach
+        </p>
+    @endif
+
     @if ($post->image)
          <img src="{{ asset('storage/' . $post->image)}}" alt="{{$post->title}}" style="max-width: 400px;">
     @endif     

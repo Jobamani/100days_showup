@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePostRequest;
@@ -34,6 +35,21 @@ class PostController extends Controller
         // return view('posts.preview', ['data' => $validated]);
         $post =Post::create($validated);
         // session(['last_post' => $validated]);
+
+        if ($request->filled('tags')) {
+            $tagNames = array_map('trim', explode(',', $request->input('tags')));
+            $tagIds = [];
+
+            foreach ($tagNames as $name) {
+                $tag = Tag::firstOrCreate(
+                    ['slug' => Str::slug($name)],
+                    ['name' => $name]
+                );
+                $tagIds[] = $tag->id;
+            }
+
+            $post->tags()->attach($tagIds);
+        }
 
         return redirect()->route('posts.show', $post->id)
             ->with('success', 'Post created successfully!');

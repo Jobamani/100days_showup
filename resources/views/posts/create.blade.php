@@ -48,6 +48,11 @@
             @enderror
         </div>
 
+        <div>
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" name="tags" value="{{ old('tags') }}" placeholder="laravel, php, tutorial">
+        </div>
+
         <button type="submit">Publish</button>
     </form>
 @endsection
