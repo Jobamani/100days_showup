@@ -14,9 +14,14 @@ class Post extends Model
 
     protected $fillable = ['user_id', 'title', 'slug', 'body', 'image'];
 
+    // public function comments()
+    // {
+    //     return $this->hasMany(Comment::class);
+    // }
+
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
         public function tags()

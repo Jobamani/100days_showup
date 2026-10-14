@@ -12,7 +12,7 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['post_id', 'user_id', 'body'];
+    protected $fillable = ['commentable_id', 'commentable_type', 'user_id', 'body'];
 
     public function post()
     {
@@ -22,6 +22,11 @@ class Comment extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function commentable()
+    {
+        return $this->morphTo();
     }
 }
 
