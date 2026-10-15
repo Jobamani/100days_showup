@@ -59,6 +59,7 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::with('comments.user')->findOrFail($id);
+        // $post = Post::findOrFail($id); n+1 testing
         return view('posts.show', ['post' => $post]);
     }
 
