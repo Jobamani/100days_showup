@@ -19,6 +19,8 @@
     
     <p>{{$post->body}}</p>
 
+    <p><em>{{ $post->excerpt }}</em></p>
+
     <p><small>Posted {{ $post->created_at->diffForHumans() }}</small></p>
 
     <a href="{{ route('posts.create')}}">Create another</a>
@@ -45,7 +47,7 @@
 
    <form action="{{ route('comments.store', $post->id) }}" method="POST">
         @csrf
-        <textarea name="body" placeholder="Add a comment..."></textarea>
+        <textarea name="body" placeholder="Add a comment..."></textarea>        
         <button type="submit">Comment</button>
     </form>
 @endsection    
