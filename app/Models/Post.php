@@ -8,12 +8,13 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
 
 class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'title', 'slug', 'body', 'image', 'featured'];
+    protected $fillable = ['user_id', 'title', 'slug', 'body', 'image', 'featured','published'];
 
     // public function comments()
     // {
@@ -49,5 +50,15 @@ class Post extends Model
         public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+   public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('published', true);
+    }
+
+    public function scopeByUser(Builder $query, int $userId): Builder
+    {
+        return $query->where('user_id', $userId);
     }
 }
