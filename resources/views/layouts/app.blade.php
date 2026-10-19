@@ -1,42 +1,36 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'My Blog') | 100 Days of Laravel</title>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 0 1rem; line-height: 1.6; }
-        header, footer { padding: 1rem 0; border-bottom: 1px solid #ddd; }
-        footer { border-bottom: 0; border-top: 1px solid #ddd; margin-top: 2rem; color: #666; }
-        nav a { margin-right: 1rem; }
-        label { display: block; margin-top: 1rem; font-weight: 600; }
-        input[type="text"], textarea { width: 100%; padding: .5rem; }
-        button { margin-top: 1rem; padding: .5rem 1rem; }
-    </style>
-</head>
-<body>
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <header>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/about">About</a>
-            <a href="{{ route('posts.create') }}">New Post</a>
-        </nav>
-    </header>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <main>
-        @if (session('success'))
-            <div style="background: #d4edda; color: #155724; padding: 1rem; margin: 1rem 0;">
-                {{ session('success') }}
-            </div>
-        @endif
-        @yield('content')
-    </main>
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+            @include('layouts.navigation')
 
-    <footer>
-        <p>&copy; {{ date('Y') }} 100 Days of Laravel</p>
-    </footer>
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white dark:bg-gray-800 shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
 
-</body>
+            <!-- Page Content -->
+            <main>
+                {{ $slot }}
+            </main>
+        </div>
+    </body>
 </html>
