@@ -66,12 +66,14 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::findOrFail($id);
+        $this->authorize('update', $post);
         return view('posts.edit', ['post' => $post]);
     }
 
     public function update(StorePostRequest $request, $id)
     {
         $post = Post::findOrFail($id);
+        $this->authorize('update', $post);
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -99,6 +101,7 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
+        $this->authorize('delete', $post);
         $post->delete();
 
         return redirect()->route('posts.create')

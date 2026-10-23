@@ -25,13 +25,17 @@
 
     <a href="{{ route('posts.create')}}">Create another</a>
 
+   @can('update', $post)
     <a href="{{ route('posts.edit', $post->id )}}">Edit</a>
+   @endcan
 
+   @can('delete', $post)
     <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Delete this post?');">
         @csrf
         @method('DELETE')
         <button type="submit">Delete</button>
-    </form>    
+    </form> 
+    @endcan
 
 
     <h2>Comments ({{ $post->comments->count()}})</h2>
