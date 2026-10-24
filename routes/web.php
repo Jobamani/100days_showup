@@ -12,9 +12,12 @@ Route::get('/about', function () {
     return 'About page';
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/admin/dashboard', function () {
+    return 'Admin area';
+})->middleware(['auth', 'can:manage-tags']);
 
 // Posts: write actions require login. These must come BEFORE /posts/{id}
 Route::middleware('auth')->group(function () {
