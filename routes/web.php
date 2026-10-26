@@ -12,9 +12,10 @@ Route::get('/about', function () {
     return 'About page';
 });
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::get('/admin/dashboard', function () {
     return 'Admin area';
 })->middleware(['auth', 'can:manage-tags']);
@@ -35,5 +36,10 @@ Route::middleware('auth')->group(function () {
 
 // Anyone can read a post
 Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
+
+
+Route::middleware(['auth', 'not-banned'])->group(function () {
+    // posts/create, store, edit, update, destroy, comments, profile routes
+});
 
 require __DIR__.'/auth.php';

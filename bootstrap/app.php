@@ -11,9 +11,16 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
+   ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'not-banned' => \App\Http\Middleware\EnsureUserIsNotBanned::class,
+        ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\EnsureUserIsNotBanned::class,
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

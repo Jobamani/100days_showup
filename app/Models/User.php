@@ -50,6 +50,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'role' => Role::class,
+            'banned_at' => 'datetime',
         ];
     }
 
@@ -61,5 +62,10 @@ class User extends Authenticatable
     public function hasRole(Role ...$roles): bool
     {
         return in_array($this->role, $roles, true);
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->banned_at !== null;
     }
 }
