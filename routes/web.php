@@ -3,6 +3,10 @@
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Models\Post;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -12,8 +16,18 @@ Route::get('/about', function () {
     return 'About page';
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard', function (Request $request) {
+    $lastPost = null;
+
+    if ($id = $request->cookie('last_post')) {
+        $lastPost = Post::published()->find($id);
+    }
+
+    return view('dashboard', ['lastPost' => $lastPost]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/admin/dashboard', function () {

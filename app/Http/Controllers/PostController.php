@@ -29,7 +29,7 @@ class PostController extends Controller
             $validated['image'] = $path;
         }
 
-        $validated['user_id'] = 1; // hardcoded until auth exists, Week 5
+        $validated['user_id'] = auth()->id(); // hardcoded until auth exists, Week 5
         $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
 
         // return view('posts.preview', ['data' => $validated]);
@@ -91,7 +91,7 @@ class PostController extends Controller
         $request->validate(['body' => 'required|min:3']);
 
         Post::findOrFail($id)->comments()->create([
-            'user_id' =>1,
+            'user_id' => auth()->id(),
             'body' => $request->input('body'),
         ]);
 

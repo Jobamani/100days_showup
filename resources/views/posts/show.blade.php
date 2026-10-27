@@ -48,10 +48,14 @@
     @empty
         <p>No comments yet.</p>
     @endforelse
-
-   <form action="{{ route('comments.store', $post->id) }}" method="POST">
-        @csrf
-        <textarea name="body" placeholder="Add a comment..."></textarea>        
-        <button type="submit">Comment</button>
-    </form>
+   
+    @auth
+        <form action="{{ route('comments.store', $post->id) }}" method="POST">
+            @csrf
+            <textarea name="body" placeholder="Add a comment..."></textarea>        
+            <button type="submit">Comment</button>
+        </form>
+    @else
+        <p><a href="{{ route('login') }}">Log in</a> to comment.</p>
+    @endauth
 @endsection    
