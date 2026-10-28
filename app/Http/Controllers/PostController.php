@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 use App\Models\Post;
 use App\Models\Tag;
@@ -11,6 +12,7 @@ use App\Http\Requests\StorePostRequest;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
     public function create()
     {
         return view('posts.create');

@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Post;
+use Illuminate\Support\Str;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +22,7 @@ class PostFactory extends Factory
         $title = fake()->sentence();
 
         return [
-            'user_id' => 1,
+            'user_id' => User::factory(),
             'title'   => $title,
             'slug'    => Str::slug($title) . '-' . fake()->unique()->numberBetween(1, 100000),
             'body'    => fake()->paragraphs(3, true),
