@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Enums\Role;
 
 /**
  * @extends Factory<User>
@@ -41,5 +42,20 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn () => ['role' => Role::Admin]);
+    }
+
+    public function editor(): static
+    {
+        return $this->state(fn () => ['role' => Role::Editor]);
+    }
+
+    public function banned(): static
+    {
+        return $this->state(fn () => ['banned_at' => now()]);
     }
 }
