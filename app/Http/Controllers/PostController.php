@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Cookie;
 
 use App\Models\Post;
 use App\Models\Tag;
@@ -61,6 +62,7 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::with('comments.user')->findOrFail($id);
+        Cookie::queue('last_post', $post->id, 60 * 24 * 30);
         // $post = Post::findOrFail($id); n+1 testing
         return view('posts.show', ['post' => $post]);
     }
