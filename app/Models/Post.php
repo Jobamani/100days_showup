@@ -61,4 +61,9 @@ class Post extends Model
     {
         return $query->where('user_id', $userId);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

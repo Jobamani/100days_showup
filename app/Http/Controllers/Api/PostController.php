@@ -4,17 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Post;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
 
 
 class PostController extends Controller
 {
     public function index()
     {
-        return Post::published()->latest()->paginate(10);
+        return PostResource::collection(Post::published()->with('user')->latest()->paginate(10));
     }
 
     public function show(int $id)
     {
-        return Post::published()->findOrFail($id);
+        return PostResource::make(Post::published()->with('user')->findOrFail($id));
     }
 }
