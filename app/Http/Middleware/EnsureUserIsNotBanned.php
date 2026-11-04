@@ -18,7 +18,13 @@ class EnsureUserIsNotBanned
     {
         $user = $request->user();
 
-        if ($user && $user ->isBanned()) {
+        if ($user && $user->isBanned()) {
+            if ($request->expectsJson()) {
+                $user->tokens()->delete();
+
+                return response()->json(['message' => 'Your account has been suspended.'], 403);
+            }
+
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
