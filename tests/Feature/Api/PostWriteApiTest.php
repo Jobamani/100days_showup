@@ -41,9 +41,10 @@ class PostWriteApiTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('data.title', 'My Api Post')
             ->assertJsonPath('data.author.id', $user->id)
+            ->assertJsonPath('data.featured', false)
             ->assertJsonStructure(['data' => ['id', 'title', 'slug', 'body', 'author']]);
 
-        $this->assertDatabaseHas('posts', ['user_id' => $user->id, 'title' => 'My Api Post']);
+        $this->assertDatabaseHas('posts', ['user_id' => $user->id, 'title' => 'My Api Post']);        
     }
 
     public function test_client_cannot_choose_the_author(): void

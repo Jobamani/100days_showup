@@ -34,7 +34,7 @@ class PostController extends Controller
         $data['user_id'] = $request->user()->id;   // never from client input
         $data['slug'] = Str::slug($data['title']).'-'.uniqid();
 
-        $post = Post::create($data)->load('user');
+        $post = Post::create($data)->refresh()->load('user');        
 
         return PostResource::make($post)->response()->setStatusCode(201);
     }
