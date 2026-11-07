@@ -16,7 +16,7 @@ class PostApiTest extends TestCase
         Post::factory()->count(3)->create(['published' => true]);
         Post::factory()->create(['published' => false]);
 
-        $this->getJson('/api/posts')
+        $this->getJson('/api/v1/posts')
             ->assertOk()
             ->assertJsonCount(3, 'data');
     }
@@ -25,7 +25,7 @@ class PostApiTest extends TestCase
     {
         Post::factory()->count(12)->create(['published' => true]);
 
-        $this->getJson('/api/posts')
+        $this->getJson('/api/v1/posts')
             ->assertOk()
             ->assertJsonCount(10, 'data')
             ->assertJsonPath('meta.total', 12)
@@ -36,7 +36,7 @@ class PostApiTest extends TestCase
     {
         Post::factory()->count(12)->create(['published' => true]);
 
-        $this->getJson('/api/posts?page=2')
+        $this->getJson('/api/v1/posts?page=2')
             ->assertOk()
             ->assertJsonCount(2, 'data');
     }
@@ -45,7 +45,7 @@ class PostApiTest extends TestCase
     {
         $post = Post::factory()->create(['published' => true]);
 
-        $this->getJson("/api/posts/{$post->id}")
+        $this->getJson("/api/v1/posts/{$post->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $post->id)
             ->assertJsonPath('data.title', $post->title);
@@ -55,12 +55,12 @@ class PostApiTest extends TestCase
     {
         $post = Post::factory()->create(['published' => false]);
 
-        $this->getJson("/api/posts/{$post->id}")->assertNotFound();
+        $this->getJson("/api/v1/posts/{$post->id}")->assertNotFound();
     }
 
     public function test_show_returns_404_for_a_missing_post(): void
     {
-        $this->getJson('/api/posts/99999')->assertNotFound();
+        $this->getJson('/api/v1/posts/99999')->assertNotFound();
     }
 
 
@@ -68,7 +68,7 @@ class PostApiTest extends TestCase
     {
         $post = Post::factory()->create(['published' => true, 'featured' => false]);
 
-        $this->getJson("/api/posts/{$post->id}")
+        $this->getJson("/api/v1/posts/{$post->id}")
             ->assertOk()
             ->assertJsonStructure(['data' => [
                 'id', 'title', 'slug', 'excerpt', 'body', 'image_url', 'featured',
@@ -86,7 +86,7 @@ class PostApiTest extends TestCase
         $user = User::factory()->create(['email' => 'secret@example.com']);
         Post::factory()->create(['user_id' => $user->id, 'published' => true]);
 
-        $this->getJson('/api/posts')
+        $this->getJson('/api/v1/posts')
             ->assertOk()
             ->assertJsonMissingPath('data.0.body')
             ->assertJsonMissingPath('data.0.author.email')
@@ -97,7 +97,7 @@ class PostApiTest extends TestCase
     {
         Post::factory()->count(12)->create(['published' => true]);
 
-        $this->getJson('/api/posts')
+        $this->getJson('/api/v1/posts')
             ->assertOk()
             ->assertJsonStructure([
                 'data',

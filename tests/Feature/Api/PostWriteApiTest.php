@@ -27,7 +27,7 @@ class PostWriteApiTest extends TestCase
 
     public function test_guest_cannot_create_a_post(): void
     {
-        $this->postJson('/api/posts', $this->validPayload())->assertUnauthorized();
+        $this->postJson('/api/v1/posts', $this->validPayload())->assertUnauthorized();
 
         $this->assertDatabaseCount('posts', 0);
     }
@@ -35,9 +35,9 @@ class PostWriteApiTest extends TestCase
     public function test_authenticated_user_can_create_a_post(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        Sanctum::actingAs($user, ['posts:write']);
 
-        $this->postJson('/api/posts', $this->validPayload())
+        $this->postJson('/api/v1/posts', $this->validPayload())
             ->assertCreated()
             ->assertJsonPath('data.title', 'My Api Post')
             ->assertJsonPath('data.author.id', $user->id)
@@ -51,9 +51,9 @@ class PostWriteApiTest extends TestCase
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
-        Sanctum::actingAs($user);
+        Sanctum::actingAs($user, ['posts:write']);
 
-        $this->postJson('/api/posts', $this->validPayload(['user_id' => $other->id]))
+        $this->postJson('/api/v1/posts', $this->validPayload(['user_id' => $other->id]))
             ->assertCreated();
 
         $this->assertDatabaseHas('posts', ['user_id' => $user->id]);
@@ -63,9 +63,9 @@ class PostWriteApiTest extends TestCase
     #[DataProvider('invalidPosts')]
     public function test_invalid_post_is_rejected(array $payload, string $field): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(), ['posts:write']);
 
-        $this->postJson('/api/posts', $payload)
+        $this->postJson('/api/v1/posts', $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
 
@@ -84,9 +84,9 @@ class PostWriteApiTest extends TestCase
 
     public function test_banned_user_cannot_create_a_post(): void
     {
-        Sanctum::actingAs(User::factory()->banned()->create());
+        Sanctum::actingAs(User::factory()->banned()->create(), ['posts:write']);
 
-        $this->postJson('/api/posts', $this->validPayload())->assertForbidden();
+        $this->postJson('/api/v1/posts', $this->validPayload())->assertForbidden();
 
         $this->assertDatabaseCount('posts', 0);
     }
@@ -94,10 +94,10 @@ class PostWriteApiTest extends TestCase
     public function test_post_can_be_created_with_an_image(): void
     {
         Storage::fake('public');
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(), ['posts:write']);
 
         $this->post(
-            '/api/posts',
+            '/api/v1/posts',
             $this->validPayload(['image' => UploadedFile::fake()->image('cover.jpg')]),
             ['Accept' => 'application/json']
         )->assertCreated();
@@ -111,9 +111,9 @@ class PostWriteApiTest extends TestCase
     {
         $user = User::factory()->create();
         $post = Post::factory()->create(['user_id' => $user->id]);
-        Sanctum::actingAs($user);
+        Sanctum::actingAs($user, ['posts:write']);
 
-        $this->putJson("/api/posts/{$post->id}", [
+        $this->putJson("/api/v1/posts/{$post->id}", [
             'title' => 'updated title here',
             'body'  => 'Updated body that is long enough.',
         ])
@@ -126,9 +126,9 @@ class PostWriteApiTest extends TestCase
     public function test_other_user_cannot_update_a_post(): void
     {
         $post = Post::factory()->create(['title' => 'Original Title']);
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(), ['posts:write']);
 
-        $this->putJson("/api/posts/{$post->id}", $this->validPayload())->assertForbidden();
+        $this->putJson("/api/v1/posts/{$post->id}", $this->validPayload())->assertForbidden();
 
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'title' => 'Original Title']);
     }
@@ -136,16 +136,16 @@ class PostWriteApiTest extends TestCase
     public function test_admin_can_update_any_post(): void
     {
         $post = Post::factory()->create();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs(User::factory()->admin()->create(), ['posts:write']);
 
-        $this->putJson("/api/posts/{$post->id}", $this->validPayload())->assertOk();
+        $this->putJson("/api/v1/posts/{$post->id}", $this->validPayload())->assertOk();
     }
 
     public function test_updating_a_missing_post_returns_404(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(), ['posts:write']);
 
-        $this->putJson('/api/posts/99999', $this->validPayload())->assertNotFound();
+        $this->putJson('/api/v1/posts/99999', $this->validPayload())->assertNotFound();
     }
 
     // ---------- delete ----------
@@ -154,7 +154,7 @@ class PostWriteApiTest extends TestCase
     {
         $post = Post::factory()->create();
 
-        $this->deleteJson("/api/posts/{$post->id}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/posts/{$post->id}")->assertUnauthorized();
 
         $this->assertDatabaseHas('posts', ['id' => $post->id]);
     }
@@ -163,9 +163,9 @@ class PostWriteApiTest extends TestCase
     {
         $user = User::factory()->create();
         $post = Post::factory()->create(['user_id' => $user->id]);
-        Sanctum::actingAs($user);
+        Sanctum::actingAs($user, ['posts:write']);
 
-        $this->deleteJson("/api/posts/{$post->id}")->assertNoContent();
+        $this->deleteJson("/api/v1/posts/{$post->id}")->assertNoContent();
 
         $this->assertDatabaseMissing('posts', ['id' => $post->id]);
     }
@@ -173,9 +173,9 @@ class PostWriteApiTest extends TestCase
     public function test_other_user_cannot_delete_a_post(): void
     {
         $post = Post::factory()->create();
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(), ['posts:write']);
 
-        $this->deleteJson("/api/posts/{$post->id}")->assertForbidden();
+        $this->deleteJson("/api/v1/posts/{$post->id}")->assertForbidden();
 
         $this->assertDatabaseHas('posts', ['id' => $post->id]);
     }

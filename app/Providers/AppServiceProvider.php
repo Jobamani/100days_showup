@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use App\Enums\Role;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +28,14 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('manage-tags', function (User $user) {
             return $user->hasRole(Role::Admin , Role::Editor);
         });
+
+        RateLimiter::for('api', fn (Request $request) =>
+            Limit::perMinute(60)->by($request->user('sanctum')?->id ?: $request->ip())
+        );
+
+        RateLimiter::for('api-login', fn(Request $request) =>
+            Limit::perMinute(5)->by(strtolower((string) $request->input('email')). '|'.$request->ip())
+        );
+        
     }
 }

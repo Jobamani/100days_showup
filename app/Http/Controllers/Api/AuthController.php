@@ -17,6 +17,7 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
             'device_name' => ['sometimes', 'string', 'max:100'],
+            'read_only' => ['sometimes', 'boolean'],
         ]);
 
         $user = User::where('email', $data['email'])->first();
@@ -31,8 +32,16 @@ class AuthController extends Controller
             return response()->json(['message' => 'Your account has been suspended.'], 403);
         }
 
+        // return response()->json([
+        //     'token' => $user->createToken($data['device_name'] ?? 'api')->plainTextToken,
+        //     'user' => new UserResource($user),
+        // ]);
+        $abilities = ($data['read_only'] ?? false)
+            ? ['posts:read']
+            : ['posts:read', 'posts:write'];
+
         return response()->json([
-            'token' => $user->createToken($data['device_name'] ?? 'api')->plainTextToken,
+            'token' => $user->createToken($data['device_name'] ?? 'api', $abilities)->plainTextToken,
             'user' => new UserResource($user),
         ]);
     }
