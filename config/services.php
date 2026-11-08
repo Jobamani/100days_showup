@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'llm' => [
+        'base_url' => env('LLM_BASE_URL', 'https://api.groq.com/openai/v1'),
+        'key' => env('LLM_API_KEY'),
+        'model' => env('LLM_MODEL', 'llama-3.1-8b-instant'),
+    ],
+
 ];

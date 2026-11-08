@@ -24,6 +24,9 @@ Route::prefix('v1')->name('api.v1.')->middleware('throttle:api')->group(function
             Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
             Route::put('/posts/{id}', [PostController::class, 'update'])->name('posts.update');
             Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+            Route::post('/posts/{id}/summary', [PostController::class, 'summarize'])
+                    ->middleware('throttle:summaries')
+                    ->name('posts.summary');
         });
     });
 });

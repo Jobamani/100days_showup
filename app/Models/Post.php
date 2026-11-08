@@ -28,6 +28,15 @@ class Post extends Model
         );
     }
 
+    protected static function booted(): void
+    {
+        static::updating(function (Post $post) {
+            if ($post->isDirty('body')) {
+                $post->summary = null;
+            }
+        });
+    }
+
     protected function title(): Attribute
     {
         return Attribute::make(

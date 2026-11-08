@@ -15,6 +15,7 @@ class PostResource extends JsonResource
             'title'      => $this->title,
             'slug'       => $this->slug,
             'excerpt'    => $this->excerpt,
+            'summary'    => $this->summary,
             'body'       => $this->when(! $request->routeIs('api.*.posts.index'), $this->body),
             'image_url'  => $this->image ? Storage::disk('public')->url($this->image) : null,
             'featured'   => $this->featured,
