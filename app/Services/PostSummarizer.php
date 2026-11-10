@@ -23,7 +23,7 @@ class PostSummarizer
             $response = $http
                 ->post(rtrim(config('services.llm.base_url'), '/').'/chat/completions', [
                     'model' => config('services.llm.model'),
-                    'max_tokens' => 200,
+                    'max_tokens' => 1000,
                     'messages' => [
                         [
                             'role' => 'system',

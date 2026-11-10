@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
 use App\Services\PostSummarizer;
+use App\Jobs\GenerateSummary;
 use App\Exceptions\SummaryFailed;
 use App\Models\Post;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -68,20 +69,15 @@ class PostController extends Controller
 
     public function summarize(int $id, PostSummarizer $summarizer)
     {
-        $post = Post::published()->with('user')->findOrFail($id);
-        $this->authorize('update', $post);
+         $post = Post::published()->with('user')->findOrFail($id);
+            $this->authorize('update', $post);
 
-        if ($post->summary === null) {
-            try {
-                $post->summary = $summarizer->summarize($post);
-                $post->save();
-            } catch (SummaryFailed $e) {
-                report($e);
+                if ($post->summary !== null) {
+                    return PostResource::make($post);
+                }
 
-                return response()->json(['message' => 'Summary is temporarily unavailable.'], 502);
-            }
-        }
+            GenerateSummary::dispatch($post->id);
 
-        return PostResource::make($post);
+            return response()->json(['message' => 'Summary is being generated.'], 202);
     }
 }
