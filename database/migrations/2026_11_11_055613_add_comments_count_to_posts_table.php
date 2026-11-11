@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('posts', function (Blueprint $table) {
+             $table->unsignedInteger('comments_count')->default(0)->after('summary');
+        });
+
+         DB::statement(
+            'UPDATE posts SET comments_count = (
+                SELECT COUNT(*) FROM comments
+                WHERE comments.commentable_type = ? AND comments.commentable_id = posts.id
+            )',
+            ['App\\Models\\Post']
+        );
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('comments_count');
+        });
+    }
+};
