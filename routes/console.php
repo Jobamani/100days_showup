@@ -11,3 +11,7 @@ Artisan::command('inspire', function () {
 Schedule::command('tokens:prune-stale --days=30')
           ->dailyAt('02:00')
           ->withoutOverlapping();
+
+Schedule::command('digest:send-weekly')
+    ->weeklyOn(1, '08:00')
+    ->withoutOverlapping();          
