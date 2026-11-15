@@ -3,12 +3,13 @@
 @section('title', $post->title)
 
 @section('content')
+<div class="text-gray-900 dark:text-gray-100">
     <h1>{{$post->title}}</h1>
 
     @if ($post->tags->isNotEmpty())
         <p>
             @foreach ($post->tags as $tag)
-                <span style="background:#eee; padding:2px 8px; border-radius:4px; margin-right:4px;">{{ $tag->name }}</span>
+               <span style="background:#eee; color:#111; padding:2px 8px; border-radius:4px; margin-right:4px;">{{ $tag->name }}</span>
             @endforeach
         </p>
     @endif
@@ -23,7 +24,9 @@
 
     <p><small>Posted {{ $post->created_at->diffForHumans() }}</small></p>
 
-    <a href="{{ route('posts.create')}}">Create another</a>
+    @auth
+        <a href="{{ route('posts.create') }}">Create another</a>
+    @endauth
 
    @can('update', $post)
     <a href="{{ route('posts.edit', $post->id )}}">Edit</a>
@@ -58,4 +61,5 @@
     @else
         <p><a href="{{ route('login') }}">Log in</a> to comment.</p>
     @endauth
+</div>    
 @endsection    

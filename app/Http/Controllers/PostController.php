@@ -20,12 +20,7 @@ class PostController extends Controller
     }
 
     public function store(StorePostRequest $request)
-    {
-        // $data = $request->only(['title', 'body']);
-        // $validate= $request->validate([
-        //     'title'=> 'required|string|max:255',
-        //     'body'=> 'required|string|min:10',
-        // ]);
+    {      
         $validated = $request->validated();
          if ($request->hasFile('image')) {
             $path = $request->file('image')->store('posts', 'public');
@@ -62,8 +57,11 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::with('comments.user')->findOrFail($id);
+
+        abort_unless($post->published || auth()->id() === $post->user_id, 404);
+
         Cookie::queue('last_post', $post->id, 60 * 24 * 30);
-        // $post = Post::findOrFail($id); n+1 testing
+
         return view('posts.show', ['post' => $post]);
     }
 
