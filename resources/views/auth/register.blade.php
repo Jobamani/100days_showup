@@ -19,7 +19,7 @@
         <!-- Bio -->
         <div class="mt-4">
             <x-input-label for="bio" :value="__('Bio')" />
-            <textarea id="bio" name="bio" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('bio') }}</textarea>
+            <x-textarea id="bio" name="bio" class="block mt-1 w-full">{{ old('bio') }}</x-textarea>
             <x-input-error :messages="$errors->get('bio')" class="mt-2" />
         </div>
 
@@ -54,7 +54,7 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
+            <a class="underline text-sm text-muted hover:text-ink rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent focus:ring-offset-surface" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
             </a>
 

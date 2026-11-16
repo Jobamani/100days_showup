@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --page: 245 246 248;
+    --surface: 255 255 255;
+    --ink: 20 23 31;
+    --muted: 90 98 112;
+    --line: 226 229 234;
+    --header: 18 21 28;
+    --accent: 194 56 31;
+    color-scheme: light;
+}
+
+.dark {
+    --page: 15 18 24;
+    --surface: 24 28 37;
+    --ink: 232 234 238;
+    --muted: 154 163 178;
+    --line: 42 48 59;
+    --header: 11 13 18;
+    --accent: 228 87 46;
+    color-scheme: dark;
+}

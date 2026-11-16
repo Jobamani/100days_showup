@@ -3,56 +3,54 @@
 @section('title', 'Create Post')
 
 @section('content')
-    <h1>Create Post</h1>
+<div class="mx-auto max-w-2xl px-4 py-8">
+    <x-card>
+        <h1 class="font-display text-2xl font-bold text-ink">Create Post</h1>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+        @if ($errors->any())
+            <div class="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+                <ul class="list-disc ps-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    @if (session('last_post'))
-        <div style="background: #e2e3e5; padding: 1rem; margin-bottom: 1rem;">
-            <strong>Last submitted:</strong> {{ session('last_post')['title'] }}
-        </div>
-    @endif
+        @if (session('last_post'))
+            <div class="mt-4 rounded-md bg-page p-3 text-sm text-muted">
+                <strong class="text-ink">Last submitted:</strong> {{ session('last_post')['title'] }}
+            </div>
+        @endif
 
-    <form action="{{ route('posts.store') }}" method="POST"  enctype="multipart/form-data">
-        @csrf
+        <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="mt-6 space-y-5">
+            @csrf
 
-        <div>
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title" value="{{ old('title') }}">
-             @error('title')
-                <div style="color: red;">{{ $message }}</div>
-            @enderror
-        </div>
+            <div>
+                <x-input-label for="title" value="Title" />
+                <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" :value="old('title')" />
+                <x-input-error :messages="$errors->get('title')" class="mt-2" />
+            </div>
 
-        <div>
-            <label for="body">Body</label>
-            <textarea id="body" name="body">{{ old('body') }}</textarea>
-             @error('body')
-                <div style="color: red;">{{ $message }}</div>
-            @enderror
-        </div>
+            <div>
+                <x-input-label for="body" value="Body" />
+                <x-textarea id="body" name="body" rows="8" class="mt-1 block w-full">{{ old('body') }}</x-textarea>
+                <x-input-error :messages="$errors->get('body')" class="mt-2" />
+            </div>
 
-        <div>
-            <label for="image">Featured Image</label>
-            <input type="file" id="image" name="image">
-            @error('image')
-                <div style="color: red;">{{ $message }}</div>
-            @enderror
-        </div>
+            <div>
+                <x-input-label for="image" value="Featured Image" />
+                <input id="image" name="image" type="file" class="mt-1 block w-full text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-page file:px-3 file:py-2 file:text-ink">
+                <x-input-error :messages="$errors->get('image')" class="mt-2" />
+            </div>
 
-        <div>
-            <label for="tags">Tags</label>
-            <input type="text" id="tags" name="tags" value="{{ old('tags') }}" placeholder="laravel, php, tutorial">
-        </div>
+            <div>
+                <x-input-label for="tags" value="Tags" />
+                <x-text-input id="tags" name="tags" type="text" class="mt-1 block w-full" :value="old('tags')" placeholder="laravel, php, tutorial" />
+            </div>
 
-        <button type="submit">Publish</button>
-    </form>
+            <x-primary-button>Publish</x-primary-button>
+        </form>
+    </x-card>
+</div>
 @endsection

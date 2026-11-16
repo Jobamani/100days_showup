@@ -1,65 +1,74 @@
-@extends ('layouts.app')
+@extends('layouts.app')
 
 @section('title', $post->title)
 
 @section('content')
-<div class="text-gray-900 dark:text-gray-100">
-    <h1>{{$post->title}}</h1>
+<div class="mx-auto max-w-3xl space-y-6 px-4 py-8">
+    <x-card>
+        <h1 class="font-display text-2xl font-bold text-ink">{{ $post->title }}</h1>
 
-    @if ($post->tags->isNotEmpty())
-        <p>
-            @foreach ($post->tags as $tag)
-               <span style="background:#eee; color:#111; padding:2px 8px; border-radius:4px; margin-right:4px;">{{ $tag->name }}</span>
-            @endforeach
-        </p>
-    @endif
+        @if ($post->tags->isNotEmpty())
+            <div class="mt-3 flex flex-wrap gap-2">
+                @foreach ($post->tags as $tag)
+                    <x-tag-pill :tag="$tag" />
+                @endforeach
+            </div>
+        @endif
 
-    @if ($post->image)
-         <img src="{{ asset('storage/' . $post->image)}}" alt="{{$post->title}}" style="max-width: 400px;">
-    @endif     
-    
-    <p>{{$post->body}}</p>
+        @if ($post->image)
+            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" class="mt-4 w-full rounded-md border border-line">
+        @endif
 
-    <p><em>{{ $post->excerpt }}</em></p>
+        <div class="mt-4 whitespace-pre-line text-ink">{{ $post->body }}</div>
 
-    <p><small>Posted {{ $post->created_at->diffForHumans() }}</small></p>
+        @if ($post->excerpt)
+            <p class="mt-4 text-sm italic text-muted">{{ $post->excerpt }}</p>
+        @endif
 
-    @auth
-        <a href="{{ route('posts.create') }}">Create another</a>
-    @endauth
+        <p class="mt-4 text-xs text-muted">Posted {{ $post->created_at->diffForHumans() }}</p>
 
-   @can('update', $post)
-    <a href="{{ route('posts.edit', $post->id )}}">Edit</a>
-   @endcan
+        @auth
+            <div class="mt-4 flex flex-wrap items-center gap-4 border-t border-line pt-4">
+                <a href="{{ route('posts.create') }}" class="text-sm font-medium text-accent hover:underline">Create another</a>
 
-   @can('delete', $post)
-    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Delete this post?');">
-        @csrf
-        @method('DELETE')
-        <button type="submit">Delete</button>
-    </form> 
-    @endcan
+                @can('update', $post)
+                    <a href="{{ route('posts.edit', $post->id) }}" class="text-sm font-medium text-accent hover:underline">Edit</a>
+                @endcan
 
+                @can('delete', $post)
+                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this post?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-sm font-medium text-red-600 hover:underline dark:text-red-400">Delete</button>
+                    </form>
+                @endcan
+            </div>
+        @endauth
+    </x-card>
 
-    <h2>Comments ({{ $post->comments->count()}})</h2>
+    <x-card>
+        <h2 class="font-semibold text-ink">Comments ({{ $post->comments->count() }})</h2>
 
-    @forelse ($post->comments as $comment)
-        <div style="border-top: 1px solid #add; padding:0.5rem 0;">
-            <strong>{{ $comment->user->name }}</strong>
-            <p>{{ $comment->body }}</p>
+        <div class="mt-3 divide-y divide-line">
+            @forelse ($post->comments as $comment)
+                <div class="py-3">
+                    <p class="text-sm font-semibold text-ink">{{ $comment->user->name }}</p>
+                    <p class="mt-1 text-sm text-ink">{{ $comment->body }}</p>
+                </div>
+            @empty
+                <p class="py-3 text-sm text-muted">No comments yet.</p>
+            @endforelse
         </div>
-    @empty
-        <p>No comments yet.</p>
-    @endforelse
-   
-    @auth
-        <form action="{{ route('comments.store', $post->id) }}" method="POST">
-            @csrf
-            <textarea name="body" placeholder="Add a comment..."></textarea>        
-            <button type="submit">Comment</button>
-        </form>
-    @else
-        <p><a href="{{ route('login') }}">Log in</a> to comment.</p>
-    @endauth
-</div>    
-@endsection    
+
+        @auth
+            <form action="{{ route('comments.store', $post->id) }}" method="POST" class="mt-4 space-y-3">
+                @csrf
+                <x-textarea name="body" rows="3" class="block w-full" placeholder="Add a comment..."></x-textarea>
+                <x-primary-button>Comment</x-primary-button>
+            </form>
+        @else
+            <p class="mt-4 text-sm text-muted"><a href="{{ route('login') }}" class="text-accent hover:underline">Log in</a> to comment.</p>
+        @endauth
+    </x-card>
+</div>
+@endsection
