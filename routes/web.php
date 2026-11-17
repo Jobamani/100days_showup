@@ -8,17 +8,12 @@ use App\Models\Post;
 
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PostController::class, 'index'])->name('posts.index');
 
 Route::get('/about', function () {
     return 'About page';
 });
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard', function (Request $request) {
     $lastPost = null;

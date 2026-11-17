@@ -14,6 +14,13 @@ use App\Http\Requests\StorePostRequest;
 class PostController extends Controller
 {
     use AuthorizesRequests;
+
+    public function index()
+    {
+        $posts = Post::published()->with(['user', 'tags'])->latest()->paginate(10);
+
+        return view('posts.index', ['posts' => $posts]);
+    }
     public function create()
     {
         return view('posts.create');

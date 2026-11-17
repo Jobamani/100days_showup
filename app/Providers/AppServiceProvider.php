@@ -9,6 +9,7 @@ use App\Enums\Role;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Database\Eloquent\Model;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('summaries', fn (Request $request) =>
             Limit::perMinute(5)->by($request->user('sanctum')?->id ?: $request->ip())
         );
+
+        Model::preventLazyLoading(! $this->app->isProduction());
         
     }
 }

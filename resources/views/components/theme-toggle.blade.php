@@ -15,5 +15,3 @@
             class="px-2 py-1 first:rounded-l-md last:rounded-r-md">{{ $label }}</button>
     @endforeach
 </div>
-
-@include('layouts.theme-script')
