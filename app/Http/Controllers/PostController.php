@@ -9,6 +9,7 @@ use App\Models\Tag;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePostRequest;
+use App\Support\FeedCache;
 
 
 class PostController extends Controller
@@ -17,9 +18,9 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::published()->with(['user', 'tags'])->latest()->paginate(10);
+        $page = max(1, (int) request('page', 1));
 
-        return view('posts.index', ['posts' => $posts]);
+        return view('posts.index', ['posts' => FeedCache::page($page)]);
     }
     public function create()
     {

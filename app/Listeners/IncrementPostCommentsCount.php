@@ -6,6 +6,7 @@ use App\Events\CommentCreated;
 use App\Models\Post;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use App\Support\FeedCache;
 
 
 
@@ -28,7 +29,9 @@ class IncrementPostCommentsCount
         $commentable = $event->comment->commentable;
 
         if ($commentable instanceof Post) {
-            $commentable->increment('comments_count');
+            $commentable->increment('comments_count');            
         }
+
+        FeedCache::bump();
     }
 }

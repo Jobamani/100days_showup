@@ -35,6 +35,8 @@ class Post extends Model
                 $post->summary = null;
             }
         });
+         static::saved(fn () => \App\Support\FeedCache::bump());
+         static::deleted(fn () => \App\Support\FeedCache::bump());
     }
 
     protected function title(): Attribute

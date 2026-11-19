@@ -9,6 +9,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Enums\Role;
+use App\Support\FeedCache;
+
 
 class User extends Authenticatable
 {
@@ -52,6 +54,15 @@ class User extends Authenticatable
             'role' => Role::class,
             'banned_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (User $user) {
+            if ($user->wasChanged('name')) {
+                \App\Support\FeedCache::bump();
+            }
+        });
     }
 
     public function isAdmin(): bool
