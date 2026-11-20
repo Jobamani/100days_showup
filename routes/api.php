@@ -12,7 +12,11 @@ Route::prefix('v1')->name('api.v1.')->middleware('throttle:api')->group(function
         ->middleware('throttle:api-login')
         ->name('login');
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-    Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
+    
+    Route::middleware('cache.headers:public;max_age=30;etag')->group(function () {
+        Route::get('/feed', [PostController::class, 'feed'])->name('feed');
+        Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
+    });
 
     // authenticated, not banned
     Route::middleware(['auth:sanctum', 'not-banned'])->group(function () {

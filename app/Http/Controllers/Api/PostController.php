@@ -21,6 +21,17 @@ class PostController extends Controller
         return PostResource::collection(Post::published()->with('user')->latest()->paginate(10));
     }
 
+        public function feed()
+    {
+        return PostResource::collection(
+            Post::published()
+                ->with('user')
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')      
+                ->cursorPaginate(10)
+        );
+    }
+
     public function show(int $id)
     {
         return PostResource::make(Post::published()->with('user')->findOrFail($id));
