@@ -10,6 +10,10 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
+use App\Support\QueryStats;
+use App\Support\SlowQueryLogger;
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Support\Facades\DB;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(QueryStats::class);
     }
 
     /**
@@ -44,5 +48,9 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading(! $this->app->isProduction());
         
+        DB::listen(function (QueryExecuted $query) {
+            app(QueryStats::class)->record($query->time);
+            SlowQueryLogger::handle($query);
+        });
     }
 }
