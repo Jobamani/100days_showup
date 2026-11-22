@@ -14,7 +14,7 @@ One running project, taken from beginner concepts to advanced topics, with a dai
 - **Roles and permissions**: `user`, `editor` and `admin` (PHP enum), Gates, and a `PostPolicy`
 - **Account bans**: banned users are logged out on their next request (custom middleware)
 - **Sessions and cookies**: a "Continue reading" link on the dashboard
-- **Automated tests**: 75 PHPUnit tests (feature and unit), run on every push with GitHub Actions
+- **Automated tests**: PHPUnit feature and unit tests run on every push with GitHub Actions
 
 ## Tech stack
 
@@ -70,3 +70,18 @@ Daily progress is posted on LinkedIn with the hashtag **#100DaysOfLaravel**.
 ## License
 
 Open source under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Performance notes (Week 9)
+
+Measured on 200k seeded posts (MySQL, one dev machine, warm cache):
+
+| Change | Before | After |
+|---|---|---|
+| Home feed N+1 | 8–22 queries, grows with posts | 4 queries, constant |
+| Index on posts (published, created_at) | 199 ms | 0.65 ms |
+| Versioned feed cache | 43 ms | 0.8 ms |
+| Deep page, offset vs cursor (`/api/v1/feed`) | 237 ms | 1.8 ms |
+
+Reproduce: `DB_DATABASE=100days_perf php artisan migrate && DB_DATABASE=100days_perf php artisan db:seed --class=PerformanceSeeder`
+
+Observability: queries above `SLOW_QUERY_MS` log as `slow_query` (bindings never logged); the `Server-Timing` header is on outside production (`EXPOSE_SERVER_TIMING`).
