@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\QuestionController;
 
 
 
@@ -51,4 +53,13 @@ Route::middleware(['auth', 'not-banned'])->group(function () {
     // posts/create, store, edit, update, destroy, comments, profile routes
 });
 
+Route::get('/questions/{question}/{slug?}', [QuestionController::class, 'show'])
+    ->whereNumber('question')
+    ->name('questions.show');
+
+Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
+    ->whereNumber('question')
+    ->middleware(['auth', 'throttle:10,1'])
+    ->name('questions.answers.store');
+    
 require __DIR__.'/auth.php';

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\Answer;
+
 
 class Question extends Model
 {
