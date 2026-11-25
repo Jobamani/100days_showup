@@ -10,7 +10,7 @@
                 asked by {{ $question->user->name }} · {{ $question->created_at->diffForHumans() }}
             </p>
 
-            <div class="mt-4 text-ink whitespace-pre-line">{{ $question->body }}</div>
+            <div class="markdown mt-4 text-ink">{{ \App\Support\Markdown::render($question->body) }}</div>
 
             @if ($question->tags->isNotEmpty())
                 <div class="mt-4 flex flex-wrap gap-2">
@@ -27,7 +27,7 @@
 
         @foreach ($question->answers as $answer)
             <x-card id="answer-{{ $answer->id }}">
-                <div class="text-ink whitespace-pre-line">{{ $answer->body }}</div>
+                <div class="markdown text-ink">{{ \App\Support\Markdown::render($answer->body) }}</div>
                 <p class="mt-3 text-sm text-muted">
                     answered by {{ $answer->user->name }} · {{ $answer->created_at->diffForHumans() }}
                 </p>

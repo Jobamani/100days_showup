@@ -17,6 +17,12 @@
                             {{ __('Posts') }}
                         </x-nav-link>
                     @endif
+
+                    @auth
+                        <x-nav-link :href="route('questions.create')" :active="request()->routeIs('questions.create')">
+                            {{ __('Ask') }}
+                        </x-nav-link>
+                    @endauth
                 </div>
             </div>
 
@@ -79,6 +85,11 @@
                     {{ __('Posts') }}
                 </x-responsive-nav-link>
             @endif
+            @auth
+                <x-responsive-nav-link :href="route('questions.create')" :active="request()->routeIs('questions.create')">
+                    {{ __('Ask') }}
+                </x-responsive-nav-link>
+            @endauth
         </div>
 
         <div class="px-4 pb-3">

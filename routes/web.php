@@ -61,5 +61,13 @@ Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
     ->whereNumber('question')
     ->middleware(['auth', 'throttle:10,1'])
     ->name('questions.answers.store');
-    
+
+ Route::get('/questions/create', [QuestionController::class, 'create'])
+    ->middleware('auth')
+    ->name('questions.create');
+
+Route::post('/questions', [QuestionController::class, 'store'])
+    ->middleware(['auth', 'throttle:5,1'])
+    ->name('questions.store');   
+
 require __DIR__.'/auth.php';
