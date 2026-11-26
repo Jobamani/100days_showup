@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\VoteController;
 
 
 
@@ -48,26 +49,32 @@ Route::middleware('auth')->group(function () {
 // Anyone can read a post
 Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
-
-Route::middleware(['auth', 'not-banned'])->group(function () {
-    // posts/create, store, edit, update, destroy, comments, profile routes
-});
-
 Route::get('/questions/{question}/{slug?}', [QuestionController::class, 'show'])
     ->whereNumber('question')
     ->name('questions.show');
 
-Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
-    ->whereNumber('question')
-    ->middleware(['auth', 'throttle:10,1'])
-    ->name('questions.answers.store');
+Route::middleware(['auth', 'not-banned'])->group(function () {
+    // posts/create, store, edit, update, destroy, comments, profile routes
+    Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 
- Route::get('/questions/create', [QuestionController::class, 'create'])
-    ->middleware('auth')
-    ->name('questions.create');
+    Route::post('/questions', [QuestionController::class, 'store'])
+        ->middleware('throttle:5,1,questions')
+        ->name('questions.store');
 
-Route::post('/questions', [QuestionController::class, 'store'])
-    ->middleware(['auth', 'throttle:5,1'])
-    ->name('questions.store');   
+    Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
+        ->whereNumber('question')
+        ->middleware('throttle:10,1,answers')
+        ->name('questions.answers.store');
+
+    Route::post('/questions/{question}/vote', [VoteController::class, 'question'])
+        ->whereNumber('question')
+        ->middleware('throttle:20,1,votes')
+        ->name('questions.vote');
+
+    Route::post('/answers/{answer}/vote', [VoteController::class, 'answer'])
+        ->whereNumber('answer')
+        ->middleware('throttle:20,1,votes')
+        ->name('answers.vote'); 
+});  
 
 require __DIR__.'/auth.php';

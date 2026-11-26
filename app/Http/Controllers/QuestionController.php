@@ -8,6 +8,8 @@ use App\Models\Tag;
 use App\Support\TagParser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\Vote;
 
 class QuestionController extends Controller
 {
@@ -16,22 +18,31 @@ class QuestionController extends Controller
     {
         return view('questions.create');
     }
-    public function show(Question $question, ?string $slug = null)
+   public function show(Request $request, Question $question, ?string $slug = null)
     {
-        // '' (title with no sluggable characters) and a missing slug must count as equal,
-        // otherwise this redirects to itself forever
         if (($slug ?? '') !== $question->slug) {
             return redirect()->route('questions.show', [$question, $question->slug], 301);
         }
 
+        $question->loadSum('votes as score', 'value');
         $question->load([
             'user',
             'tags',
-            'answers' => fn ($query) => $query->oldest()->orderBy('id'),
+            'answers' => fn ($query) => $query->withSum('votes as score', 'value')->oldest()->orderBy('id'),
             'answers.user',
         ]);
 
-        return view('questions.show', compact('question'));
+        // the viewer's own votes on this page: one query, whatever the number of answers
+        $myVotes = $request->user()
+            ? Vote::where('user_id', $request->user()->id)
+                ->where(fn ($query) => $query
+                    ->where(fn ($q) => $q->where('votable_type', 'question')->where('votable_id', $question->id))
+                    ->orWhere(fn ($q) => $q->where('votable_type', 'answer')->whereIn('votable_id', $question->answers->modelKeys())))
+                ->get()
+                ->mapWithKeys(fn (Vote $vote) => ["{$vote->votable_type}:{$vote->votable_id}" => $vote->value])
+            : collect();
+
+        return view('questions.show', compact('question', 'myVotes'));
     }
 
     public function store(StoreQuestionRequest $request)

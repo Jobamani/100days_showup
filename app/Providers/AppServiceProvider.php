@@ -14,6 +14,10 @@ use App\Support\QueryStats;
 use App\Support\SlowQueryLogger;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Models\Answer;
+use App\Models\Question;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -52,5 +56,11 @@ class AppServiceProvider extends ServiceProvider
             app(QueryStats::class)->record($query->time);
             SlowQueryLogger::handle($query);
         });
+
+        // store short names, not class names, in votable_type; unmapped types (your comments) are untouched
+        Relation::morphMap([
+            'question' => Question::class,
+            'answer'   => Answer::class,
+        ]);
     }
 }

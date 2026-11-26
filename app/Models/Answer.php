@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 use App\Models\Question;
+use App\Models\Concerns\HasVotes;
 
 
 
 class Answer extends Model
 {
-    use HasFactory;
+    use HasFactory, HasVotes;
 
     protected $fillable = ['body'];
 
@@ -24,5 +25,10 @@ class Answer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(fn (Answer $answer) => $answer->votes()->delete());
     }
 }

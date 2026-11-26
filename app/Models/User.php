@@ -10,7 +10,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Enums\Role;
 use App\Support\FeedCache;
-
+use App\Models\Answer;
+use App\Models\Question;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -61,6 +63,16 @@ class User extends Authenticatable
         static::saved(function (User $user) {
             if ($user->wasChanged('name')) {
                 \App\Support\FeedCache::bump();
+            }
+        });
+
+        static::deleting(function (User $user) {
+            // delete through the models, so the Question/Answer hooks remove their votes
+            foreach ($user->questions()->get() as $question) {
+                $question->delete();
+            }
+            foreach ($user->answers()->get() as $answer) {
+                $answer->delete();
             }
         });
     }
