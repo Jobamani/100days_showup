@@ -28,9 +28,13 @@ class QuestionController extends Controller
         $question->load([
             'user',
             'tags',
-            'answers' => fn ($query) => $query->withSum('votes as score', 'value')->oldest()->orderBy('id'),
+            'answers' => fn ($query) => $query->withSum('votes as score', 'value')
+                ->orderByRaw('answers.id = ? DESC', [$question->accepted_answer_id ?? 0])
+                ->orderByRaw('COALESCE(score, 0) DESC')
+                ->oldest('answers.created_at')
+                ->orderBy('answers.id'),
             'answers.user',
-        ]);
+            ]);
 
         // the viewer's own votes on this page: one query, whatever the number of answers
         $myVotes = $request->user()

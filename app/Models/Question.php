@@ -53,4 +53,9 @@ class Question extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    public function acceptedAnswer(): BelongsTo
+    {
+        return $this->belongsTo(Answer::class, 'accepted_answer_id');
+    }
 }

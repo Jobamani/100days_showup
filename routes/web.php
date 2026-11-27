@@ -8,7 +8,7 @@ use App\Models\Post;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\VoteController;
-
+use App\Http\Controllers\AcceptAnswerController;
 
 
 Route::get('/', [PostController::class, 'index'])->name('posts.index');
@@ -75,6 +75,11 @@ Route::middleware(['auth', 'not-banned'])->group(function () {
         ->whereNumber('answer')
         ->middleware('throttle:20,1,votes')
         ->name('answers.vote'); 
+
+    Route::post('/answers/{answer}/accept', AcceptAnswerController::class)
+        ->whereNumber('answer')
+        ->middleware('throttle:30,1,accept')
+        ->name('answers.accept');    
 });  
 
 require __DIR__.'/auth.php';

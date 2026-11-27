@@ -39,8 +39,12 @@
         {{ $question->answers->count() }} {{ Str::plural('Answer', $question->answers->count()) }}
     </h2>
 
-    @foreach ($question->answers as $answer)
-        <x-card id="answer-{{ $answer->id }}">
+       @foreach ($question->answers as $answer)
+        @php($isAccepted = $question->accepted_answer_id === $answer->id)
+
+        <x-card id="answer-{{ $answer->id }}"
+            data-answer-id="{{ $answer->id }}"
+            :data-accepted="$isAccepted ? '1' : null">
             <div class="flex gap-4">
                 <x-vote-box kind="answer"
                             :score="(int) $answer->score"
@@ -49,10 +53,25 @@
                             :can-vote="auth()->check() && auth()->id() !== $answer->user_id" />
 
                 <div class="min-w-0 flex-1">
+                    @if ($isAccepted)
+                        <p class="mb-2 text-sm font-semibold text-accent">✓ Accepted answer</p>
+                    @endif
+
                     <div class="markdown text-ink">{{ \App\Support\Markdown::render($answer->body) }}</div>
                     <p class="mt-3 text-sm text-muted">
                         answered by {{ $answer->user->name }} · {{ $answer->created_at->diffForHumans() }}
                     </p>
+
+                    @auth
+                        @if (auth()->id() === $question->user_id)
+                            <form method="POST" action="{{ route('answers.accept', $answer) }}" data-accept-button class="mt-2">
+                                @csrf
+                                <button type="submit" class="text-sm text-muted hover:text-accent">
+                                    {{ $isAccepted ? 'Unaccept' : 'Accept this answer' }}
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
                 </div>
             </div>
         </x-card>
