@@ -29,9 +29,9 @@ class IncrementPostCommentsCount
         $commentable = $event->comment->commentable;
 
         if ($commentable instanceof Post) {
-            $commentable->increment('comments_count');            
-        }
-
-        FeedCache::bump();
+            $commentable->increment('comments_count');
+            
+            FeedCache::bump();
+        }        
     }
 }

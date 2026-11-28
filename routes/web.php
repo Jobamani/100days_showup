@@ -9,6 +9,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\AcceptAnswerController;
+use App\Http\Controllers\CommentController;
 
 
 Route::get('/', [PostController::class, 'index'])->name('posts.index');
@@ -79,7 +80,16 @@ Route::middleware(['auth', 'not-banned'])->group(function () {
     Route::post('/answers/{answer}/accept', AcceptAnswerController::class)
         ->whereNumber('answer')
         ->middleware('throttle:30,1,accept')
-        ->name('answers.accept');    
+        ->name('answers.accept');
+        
+    Route::post('/questions/{question}/comments', [CommentController::class, 'question'])
+    ->whereNumber('question')->middleware('throttle:10,1,comments')->name('questions.comments.store');
+
+    Route::post('/answers/{answer}/comments', [CommentController::class, 'answer'])
+        ->whereNumber('answer')->middleware('throttle:10,1,comments')->name('answers.comments.store');
+
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+        ->whereNumber('comment')->name('comments.destroy');    
 });  
 
 require __DIR__.'/auth.php';

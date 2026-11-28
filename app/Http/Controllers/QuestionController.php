@@ -34,6 +34,10 @@ class QuestionController extends Controller
                 ->oldest('answers.created_at')
                 ->orderBy('answers.id'),
             'answers.user',
+            'comments' => fn ($query) => $query->oldest()->orderBy('id'),
+            'comments.user',
+            'answers.comments' => fn ($query) => $query->oldest()->orderBy('id'),
+            'answers.comments.user',
             ]);
 
         // the viewer's own votes on this page: one query, whatever the number of answers

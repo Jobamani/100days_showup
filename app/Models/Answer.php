@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 use App\Models\Question;
 use App\Models\Concerns\HasVotes;
+use App\Models\Concerns\HasComments;
+
 
 
 
 class Answer extends Model
 {
-    use HasFactory, HasVotes;
+    use HasFactory, HasVotes, HasComments;
 
     protected $fillable = ['body'];
 
@@ -29,6 +31,9 @@ class Answer extends Model
 
     protected static function booted(): void
     {
-        static::deleting(fn (Answer $answer) => $answer->votes()->delete());
+        static::deleting(function (Answer $answer) {
+            $answer->votes()->delete();
+            $answer->comments()->delete();
+        });
     }
 }

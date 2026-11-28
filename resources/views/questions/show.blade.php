@@ -8,6 +8,10 @@
         <div class="rounded-md border border-line bg-surface p-3 text-sm text-ink">{{ session('status') }}</div>
     @endif
 
+    @error('comment')
+        <div class="rounded-md border border-line bg-surface p-3 text-sm text-ink">{{ $message }}</div>
+    @enderror
+
     <x-card>
         <div class="flex gap-4">
             <x-vote-box kind="question"
@@ -31,6 +35,7 @@
                         @endforeach
                     </div>
                 @endif
+                <x-comment-thread :comments="$question->comments" :action="route('questions.comments.store', $question)" />
             </div>
         </div>
     </x-card>
@@ -72,6 +77,7 @@
                             </form>
                         @endif
                     @endauth
+                    <x-comment-thread :comments="$answer->comments" :action="route('answers.comments.store', $answer)" />
                 </div>
             </div>
         </x-card>
